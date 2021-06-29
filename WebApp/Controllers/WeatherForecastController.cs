@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebApp.Controllers
@@ -20,11 +21,22 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            _mediator.Send(new CreateUserCommand("Test"));
+            try
+            {
+                await _mediator.Send(new CreateUserCommand("Test"), cancellationToken);
+
+            }
+            catch (TaskCanceledException ex)
+            {
+
+                throw;
+            }
 
             return Ok();
         }
     }
+
+
 }
