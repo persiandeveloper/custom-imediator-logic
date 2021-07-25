@@ -20,22 +20,22 @@ namespace ApplicationLogic
 
         public async Task Process(TRquest request, CancellationToken cancellationToken)
         {
-            var validatorType = GetValidatorType(typeof(ICustomValidatorType<>), typeof(TRquest));
+            var validatorType = GetValidatorClassType(typeof(ICustomValidatorType<>), typeof(TRquest));
 
             if (validatorType != null)
             {
                 var customLogicObject = ActivatorUtilities.CreateInstance(_provider, validatorType);
 
-                var result = (bool)validatorType.GetMethod("IsValid").Invoke(customLogicObject, new object[] { request });
+                var result = (Task<bool>)validatorType.GetMethod("IsValid").Invoke(customLogicObject, new object[] { request });
 
-                if (!result)
+                if (!(await result))
                 {
                     throw new Exception();
                 }
             }
         }
 
-        private Type GetValidatorType(Type genericInterface, Type requestType)
+        private Type GetValidatorClassType(Type genericInterface, Type requestType)
         {
             return Assembly.GetAssembly(requestType)
                                 .GetTypes()

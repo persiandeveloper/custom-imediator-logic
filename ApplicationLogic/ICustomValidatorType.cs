@@ -1,7 +1,9 @@
-﻿namespace ApplicationLogic
+﻿using System.Threading.Tasks;
+
+namespace ApplicationLogic
 {
     public interface ICustomValidatorType<T>
     {
-        bool IsValid(T request);
+        Task<bool> IsValid(T request);
     }
 }
